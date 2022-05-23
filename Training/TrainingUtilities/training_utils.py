@@ -55,6 +55,31 @@ def split_into_training_and_test_set(index, x, y, training_split, shuffle=False)
     return index_train, x_train, y_train, index_test, x_test, y_test
 
 
+def split_training_and_test_specified(index, x, y, training_split, starting_idx="2019-07-02 17:00:00"):
+    num_training_samples = int(training_split * len(index))
+    num_training_samples = len(x) - num_training_samples
+    print(len(index))
+    print(starting_idx)
+    start_row = np.where(index == starting_idx)[0][0]
+
+    if len(index) < start_row + num_training_samples:
+        end_row = len(index) - 1
+    else:
+        end_row = start_row + num_training_samples
+
+    x_test = x[start_row: end_row]
+    y_test = y[start_row: end_row]
+
+    x_train = np.delete(x, slice(start_row, end_row), axis=0)
+    y_train = np.delete(y, slice(start_row, end_row), axis=0)
+
+    index_test = index[start_row: end_row]
+
+    index_train = index.drop(index_test)
+
+    return index_train, x_train, y_train, index_test, x_test, y_test
+
+
 def extract_training_and_test_set(data, training_params):
     lookback_horizon = training_params.lookback_horizon
     prediction_horizon = training_params.prediction_horizon
