@@ -1,9 +1,9 @@
 #%%
 
-import ModelTraining.Training.TrainingUtilities.training_utils
+from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
 import ModelTraining.DatasetAnalysis.data_analysis as data_analysis
-import ModelTraining.Training.TrainingUtilities.training_utils as train_utils
+import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
 import ModelTraining.Preprocessing.data_preprocessing as dp_utils
 import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 import os
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     list_usecases = ['CPS-Data', 'SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1','Solarhouse2']
     #list_usecases = ['Beyond_B20_LR_dyn', 'Beyond_B12_LR_dyn']
 
-    dict_usecases = [ModelTraining.Training.TrainingUtilities.training_utils.load_from_json(os.path.join(config_path, "UseCaseConfig", f"{name}.json")) for name in
+    dict_usecases = [load_from_json(os.path.join(config_path, "UseCaseConfig", f"{name}.json")) for name in
                      list_usecases]
 
     interaction_only=True

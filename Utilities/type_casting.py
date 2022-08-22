@@ -1,3 +1,5 @@
+import builtins
+
 def cast(variable, totype: str):
     """
     Cast a variable to a type, where type is a string variable
@@ -15,13 +17,4 @@ def cast(variable, totype: str):
     -------
 
     """
-    castingtype = totype.lower()
-    if castingtype == "real":
-        return float(variable)
-    if castingtype == "int":
-        return int(variable)
-    if castingtype == "bool":
-        return bool(variable)
-    if castingtype == "string":
-        return str(variable)
-    return variable
+    return getattr(builtins, totype.lower() if totype.lower() != "real" else "float", float)(variable)

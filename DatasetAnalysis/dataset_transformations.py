@@ -1,7 +1,7 @@
 #%%
 
 import ModelTraining.DatasetAnalysis.data_analysis as data_analysis
-import ModelTraining.Training.TrainingUtilities.training_utils
+from  ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.feature_engineering.featureengineering.transformers import SqrtTransform, Boxcox, Diff
 import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 import ModelTraining.Data.Plotting.plot_data as plt_utils
@@ -9,7 +9,7 @@ from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
 from ModelTraining.Preprocessing import data_preprocessing as dp_utils
 import os
 from ModelTraining.datamodels.datamodels.processing.datascaler import Normalizer
-import ModelTraining.Training.TrainingUtilities.training_utils as train_utils
+import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
 
 
 if __name__ == '__main__':
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     config_path = os.path.join(root_dir, 'Configuration')
     list_usecases = ['CPS-Data', 'SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1','Solarhouse2']
 
-    dict_usecases = [ModelTraining.Training.TrainingUtilities.training_utils.load_from_json(os.path.join(config_path, "UseCaseConfig", f"{name}.json")) for name in
+    dict_usecases = [load_from_json(os.path.join(config_path, "UseCaseConfig", f"{name}.json")) for name in
                      list_usecases]
     dict_usecases = [dict_usecases[0]]
 
