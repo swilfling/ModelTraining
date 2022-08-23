@@ -55,7 +55,7 @@ def preprocess_data(data: pd.DataFrame, filename=""):
 
     # Beyond
     if filename in ['Beyond_B20_full', 'Beyond_B12_full']:
-        data = data.drop(pd.date_range(pd.Timestamp(2014, 4, 13), pd.Timestamp(2014, 4, 24), freq='1H'), axis=0)
+        data = data.drop(pd.date_range(pd.Timestamp(2014, 4, 13), pd.Timestamp(2014, 4, 24), freq='1H'), axis=0, errors='ignore')
         if filename == 'Beyond_B12_full':
             data = feature_mean(data, ['TB12BR1', 'TB12BR2', 'TB12BR3', 'TB12LR'], 'TB12')
         if filename == 'Beyond_B20_full':
@@ -69,5 +69,6 @@ def preprocess_data(data: pd.DataFrame, filename=""):
 
     data = data.dropna(axis=0)
     data = data.astype('float')
+    data = np.round(data, decimals=4)
     return data
 
