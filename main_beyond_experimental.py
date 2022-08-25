@@ -1,6 +1,8 @@
 import os
 import logging
 import shutil
+
+import ModelTraining.Training.TrainingUtilities.training_utils
 from Data.DataImport.featureset import FeatureSet
 from ModelTraining.Training.TrainingUtilities import training_utils_expanded as train_utils
 from ModelTraining.datamodels import datamodels
@@ -79,7 +81,7 @@ if __name__ == '__main__':
     data = train_utils.import_data(dataimport_cfg_path, data_dir_path, dict_usecase)
 
     # Configure training params
-    training_params = train_utils.set_train_params_model(training_params, feature_set, feature_set.get_output_feature_names()[0], model_type,transformer_params)
+    training_params = ModelTraining.Training.TrainingUtilities.training_utils.set_train_params_model(training_params, feature_set, feature_set.get_output_feature_names()[0], model_type, transformer_params)
 
     ####################################### Main loop ##################################################################
     training_data = data[training_params.static_input_features + training_params.dynamic_input_features]
