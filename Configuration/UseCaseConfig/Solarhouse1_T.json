@@ -6,8 +6,8 @@
     "stat_feats": [],
     "stat_vals": [],
     "to_smoothe": ["SGlobal","TAussen","TArbeitszimmer"],
-    "onehot_feats": [],
-    "cyclical_feats": [],
+    "onehot_feats": ["hour"],
+    "cyclical_feats": ["hour", "weekday"],
     "stat_ws": 96,
     "use_processed": true
 }
