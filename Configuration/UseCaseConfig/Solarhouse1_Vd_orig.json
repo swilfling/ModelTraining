@@ -6,5 +6,6 @@
     "stat_feats": ["TAussen", "SGlobal", "TSolarRL"],
     "to_smoothe": ["TAussen", "SGlobal", "TSolarRL", "TSolarVL","VDSolar"],
     "stat_vals": [],
-    "stat_ws": 96
+    "stat_ws": 96,
+    "use_processed": true
 }

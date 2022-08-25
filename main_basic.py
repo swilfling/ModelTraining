@@ -1,7 +1,6 @@
 import os
 import logging
 from sklearn.pipeline import make_pipeline
-from ModelTraining.Preprocessing import data_preprocessing as dp_utils
 from ModelTraining.feature_engineering.featureengineering.featurecreators import CyclicFeatures, CategoricalFeatures
 from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
@@ -32,8 +31,6 @@ if __name__ == '__main__':
     # Added: Preprocessing - Smooth features
     smoothe_data = True
     plot_enabled = True
-
-    data = dp_utils.preprocess_data(data, filename=dict_usecase['dataset_filename'])
 
     # Cyclic, categorical and statistical features
     cyclic_feat_cr = CyclicFeatures(dict_usecase.get('cyclical_feats', []))

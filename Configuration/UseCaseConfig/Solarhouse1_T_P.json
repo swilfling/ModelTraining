@@ -8,5 +8,6 @@
     "to_smoothe": ["SGlobal","TAussen","TArbeitszimmer"],
     "onehot_feats": [],
     "cyclical_feats": [],
-    "stat_ws": 96
+    "stat_ws": 96,
+    "use_processed": true
 }

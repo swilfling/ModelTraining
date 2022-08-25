@@ -1,5 +1,5 @@
 import copy
-import os
+from pathlib import Path
 import pandas as pd
 from .training_utils import save_model_and_params
 from ...Training.TrainingUtilities.trainingparams_expanded import TrainingParamsExpanded
@@ -22,10 +22,11 @@ def import_data(cfg_path: str, data_dir:str, dict_usecase):
     :param dict_usecase: dict containing information about dataset directory and filename
     :return: data
     """
-    data_import = DataImport.load(
-        os.path.join(cfg_path, dict_usecase['dataset_dir'], f"{dict_usecase['dataset_filename']}.json"))
-    data = data_import.import_data(
-        os.path.join(data_dir, "Data", dict_usecase['dataset_dir'], dict_usecase['dataset_filename']))
+    dataimport_cfg_path = Path(cfg_path) / dict_usecase['dataset_dir'] / f"{dict_usecase['dataset_filename']}.json"
+    data_import = DataImport.load(str(dataimport_cfg_path))
+    use_processed_file = dict_usecase.get('use_processed',False)
+    filename = dict_usecase['dataset_filename'] if not use_processed_file else f"{dict_usecase['dataset_filename']}_proc"
+    data = data_import.import_data(str(Path(data_dir) / "Data" / dict_usecase['dataset_dir'] / filename))
     return data
 
 
@@ -88,8 +89,8 @@ def replace_dataset(data, list_training_parameters, first_train_results_path, lo
 
 
 def store_results(model,train_data, training_params, metr_exp: MetricsCalc, best_params, result_dir_model, result_id, experiment_name, usecase_name):
-    model_dir = os.path.join(result_dir_model, f"Models/{training_params.model_name}/{training_params.model_type}")
-    save_model_and_params(model, training_params, model_dir)
+    model_dir = Path(result_dir_model) / "Models"/f"{training_params.model_name}"/f"{training_params.model_type}"
+    save_model_and_params(model, training_params, str(model_dir))
     # Calculate and export metrics
     train_data.save_pkl(result_dir_model, "result_data.pkl")
     # Calc metrics
@@ -110,8 +111,8 @@ def store_results(model,train_data, training_params, metr_exp: MetricsCalc, best
     # Store metrics separately
     metr_exp.add_metr_vals(metr_vals)
     for type in ['Metrics', 'pvalues', 'FeatureSelect']:
-        filename = os.path.join(result_dir_model, f"{type}_{experiment_name}.csv")
-        metr_exp.store_metr_df(metr_exp.get_metr_df(type), filename)
+        filename = Path(result_dir_model)/ f"{type}_{experiment_name}.csv"
+        metr_exp.store_metr_df(metr_exp.get_metr_df(type), str(filename))
     # Export results
     exp = ResultExport(results_root=result_dir_model, plot_enabled=True)
     exp.export_result(train_data, result_id, show_fig=False)

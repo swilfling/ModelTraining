@@ -25,5 +25,6 @@
     "onehot_feats": [
         "hour",
         "weekday"
-    ]
+    ],
+    "use_processed": true
 }

@@ -1,7 +1,6 @@
 import os
 import logging
 import shutil
-from ModelTraining.Preprocessing import data_preprocessing as dp_utils
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
 from ModelTraining.Training.TrainingUtilities import training_utils_expanded as train_utils_exp
 from ModelTraining.Training.TrainingUtilities import training_utils as train_utils
@@ -67,7 +66,6 @@ if __name__ == '__main__':
     # Get data
     dataimport_cfg_path = os.path.join(data_dir_path,"Configuration","DataImport")
     data = train_utils_exp.import_data(dataimport_cfg_path,data_dir_path, dict_usecase)
-    data = dp_utils.preprocess_data(data, filename=dict_usecase['dataset_filename'])
     training_params = train_utils_exp.set_train_params_model(training_params, feature_set, feature_set.get_output_feature_names()[0], model_types[0],transformer_params)
     train_utils_exp.set_train_params_transformers(training_params, dict_usecase)
 

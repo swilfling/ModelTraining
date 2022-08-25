@@ -5,7 +5,6 @@ from ModelTraining.feature_engineering.featureengineering.featureselectors impor
 import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
 from ModelTraining.Training.run_training_model import run_training_model
 from ModelTraining.Utilities.MetricsExport import MetricsCalc, ResultExport, metr_utils
-import ModelTraining.Preprocessing.data_preprocessing as dp_utils
 from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
 from ModelTraining.datamodels.datamodels.wrappers.expandedmodel import ExpandedModel, TransformerParams
@@ -59,7 +58,6 @@ if __name__ == '__main__':
         dataimport_cfg_path = os.path.join(data_dir_path, "Configuration", "DataImport")
         data = train_utils.import_data(dataimport_cfg_path, data_dir_path, dict_usecase)
         feature_set = FeatureSet(os.path.join(root_dir, "Data", "Configuration", "FeatureSet", dict_usecase['fmu_interface']))
-        data = dp_utils.preprocess_data(data, dict_usecase['dataset_filename'])
         # Main loop
         for params_name in params_names:
             os.makedirs(os.path.join(results_path, dict_usecase['name'], params_name), exist_ok=True)
