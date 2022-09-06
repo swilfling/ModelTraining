@@ -1,4 +1,3 @@
-import copy
 from pathlib import Path
 import pandas as pd
 from .training_utils import save_model_and_params
@@ -121,17 +120,3 @@ def store_results(model,train_data, training_params, metr_exp: MetricsCalc, best
     exp.export_featsel_metrs(model, result_id)
 
 
-def set_train_params_model(training_params_basic_config, feature_set, target_feature, model_type, transformer_params=None):
-    """
-    Set values of training params - Specific for use case with one target feature!
-    """
-    training_params = copy.copy(training_params_basic_config)
-    training_params.model_type = model_type
-    training_params.model_name = target_feature
-    training_params.target_features = [target_feature]
-    training_params.static_input_features = feature_set.get_static_input_feature_names(target_feature)
-    training_params.dynamic_input_features = feature_set.get_dynamic_input_feature_names(target_feature)
-    training_params.dynamic_output_features = feature_set.get_dynamic_output_feature_names(target_feature)
-    if isinstance(training_params_basic_config, TrainingParamsExpanded) and transformer_params is not None:
-        training_params.transformer_params = transformer_params
-    return training_params

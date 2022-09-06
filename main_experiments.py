@@ -1,13 +1,14 @@
 #%%
+import ModelTraining.Training.TrainingUtilities.training_utils as train_utils
 from ModelTraining.Training.TrainingUtilities.trainingparams_expanded import TrainingParamsExpanded
 from ModelTraining.Utilities import TrainingData
 from ModelTraining.feature_engineering.featureengineering.featureselectors import FeatureSelector
-import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
+import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils_exp
 from ModelTraining.Training.run_training_model import run_training_model
 from ModelTraining.Utilities.MetricsExport import MetricsCalc, ResultExport, metr_utils
 from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
-from ModelTraining.datamodels.datamodels.wrappers.expandedmodel import ExpandedModel, TransformerParams
+from ModelTraining.datamodels.datamodels.wrappers.expandedmodel import ExpandedModel
 from ModelTraining.feature_engineering.featureengineering.featureexpanders import FeatureExpansion
 import os
 import argparse
@@ -56,7 +57,7 @@ if __name__ == '__main__':
         results_path_dataset = os.path.join(results_path, usecase_name)
         # Get data and feature set
         dataimport_cfg_path = os.path.join(data_dir_path, "Configuration", "DataImport")
-        data = train_utils.import_data(dataimport_cfg_path, data_dir_path, dict_usecase)
+        data = train_utils_exp.import_data(dataimport_cfg_path, data_dir_path, dict_usecase)
         feature_set = FeatureSet(os.path.join(root_dir, "Data", "Configuration", "FeatureSet", dict_usecase['fmu_interface']))
         # Main loop
         for params_name in params_names:
@@ -64,7 +65,7 @@ if __name__ == '__main__':
             results_path_thresh = os.path.join(results_path_dataset, params_name)
             for training_params_cfg in list_train_params:
                 if isinstance(training_params_cfg, TrainingParamsExpanded):
-                    train_utils.set_train_params_transformers(training_params_cfg, dict_usecase)
+                    train_utils_exp.set_train_params_transformers(training_params_cfg, dict_usecase)
                 for model_type in model_types:
                     for feature in feature_set.get_output_feature_names():
                         training_params = train_utils.set_train_params_model(training_params_cfg, feature_set, feature, model_type)
