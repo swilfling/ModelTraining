@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
+
 if __name__ == "__main__":
     dir = "../../../Data/Data/Beyond/REFIT"
     data = pd.read_csv(f"{dir}/REFIT_TIME_SERIES_VALUES.csv")
@@ -16,6 +17,11 @@ if __name__ == "__main__":
                #"TB20RAD243_2":"TimeSeriesVariable1178",
                #"TB20RAD243_3":"TimeSeriesVariable1179",
                "TB20RAD244": "TimeSeriesVariable1180",
+               "TAmbient": "TimeSeriesVariable1573",
+               "humidity": "TimeSeriesVariable1574",
+               "vWind":"TimeSeriesVariable1575",
+               "SHorizontal":"TimeSeriesVariable1578",
+               "rain": "TimeSeriesVariable1582"
                #"TB20RAD244_2": "TimeSeriesVariable1181",
                #"TB20RAD244_3": "TimeSeriesVariable1182",
                }
@@ -36,6 +42,9 @@ if __name__ == "__main__":
 
     df.to_csv(f"{dir}/B20/B20_Indoor.csv", index_label="dt")
 
+
+    #df_additional = pd.read_csv(f"{dir}/B20/Beyond_B20_full.csv", index_col="dt", infer_datetime_format=True)
+    #df = df_additional.join(df, how="outer", rsuffix="_indoor")
 
     plt.figure(figsize=(20, 7))
     plt.plot(df["TB20LR"])
