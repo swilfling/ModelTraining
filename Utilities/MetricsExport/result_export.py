@@ -130,8 +130,11 @@ class ResultExport:
         """
         result.test_results_to_csv(self.results_root, f'TestResults_{title}.csv')
         if self.plot_enabled:
-            for feat in result.target_feat_names:
-                plt_utils.plot_data(result.test_result_df(feat), self.get_tseries_dir(), filename=f"Timeseries_{feat}_{title}",
+            df = result.test_result_df()
+            target_vals = result.test_target_vals(result.target_feat_names)
+            pred_vals = result.test_pred_vals(result.target_feat_names)
+            for i, feat in enumerate(result.get_feat_ind()):
+                plt_utils.plot_data(df[[f"GroundTruth_{feat}",f"Prediction_{feat}"]], self.get_tseries_dir(), filename=f"Timeseries_{feat}_{title}",
                                     store_to_csv=True, figsize=(14, 4), fig_title=f"Timeseries - {feat} - {title}", show_fig=show_fig)
-                plt_utils.scatterplot(result.test_pred_vals(feat), result.test_target_vals(feat), self.get_scatter_dir(),
+                plt_utils.scatterplot(pred_vals[:,i], target_vals[:,i], self.get_scatter_dir(),
                                       f"Scatter_{feat}_{title}", show_fig=show_fig)

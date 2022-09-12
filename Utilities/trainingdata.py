@@ -39,7 +39,7 @@ class TrainingData(PickleInterface):
         df = pd.DataFrame(index=self.train_index, data=np.hstack((self.train_target, self.train_prediction)), columns=['GroundTruth', 'Prediction'])
         df.to_csv(os.path.join(dir, filename), index_label=index_label)
 
-    def test_result_df(self, feat="", col_names=[]):
+    def test_result_df(self, feat=None, col_names=[]):
         """
         Create dataframe from test results
         @param feat: optional: get only results for this target feature
@@ -56,7 +56,7 @@ class TrainingData(PickleInterface):
 
         self.test_prediction = np.reshape(self.test_prediction, self.test_target.shape)
 
-        if feat == "":
+        if feat is None:
             return pd.DataFrame(index=self.test_index, data=np.hstack((self.test_target, self.test_prediction)),
                                 columns=self._get_df_cols() if col_names == [] else col_names)
         else:
@@ -64,21 +64,33 @@ class TrainingData(PickleInterface):
             return pd.DataFrame(index=self.test_index, data=np.vstack((self.test_target[:,feat_ind], self.test_prediction[:,feat_ind])).T,
                                 columns=[f'GroundTruth_{feat}', f'Prediction_{feat}'])
 
-    def test_target_vals(self, feat=""):
+    def test_target_vals(self, feat=None):
         """
         Get target vals for feature
         @param feat: optional: get only results for this target feature
         @return: target vals for feature, if no feature name is passed, returns all target vals
         """
-        return self.test_target[:,self.target_feat_names.index(feat)].reshape(self.test_target.shape[0],1) if feat else self.test_target
+        test_target = self.test_target.values if isinstance(self.test_target, pd.DataFrame) else self.test_target
+        if feat is None:
+            return test_target
+        if isinstance(feat, str):
+            return test_target[:, self.target_feat_names.index(feat)].reshape(test_target.shape[0],1)
+        if isinstance(feat, list):
+            return np.concatenate([test_target[:, self.target_feat_names.index(name)].reshape(test_target.shape[0],1) for name in feat], axis=1)
 
-    def test_pred_vals(self, feat=""):
+    def test_pred_vals(self, feat=None):
         """
         Get prediction vals for feature
         @param feat: optional: get only results for this target feature
         @return: prediction vals for feature, if no feature name is passed, returns all prediction vals
         """
-        return self.test_prediction[:,self.target_feat_names.index(feat)].reshape(self.test_target.shape[0],1) if feat else self.test_prediction
+        test_pred = self.test_prediction.values if isinstance(self.test_prediction, pd.DataFrame) else self.test_prediction
+        if feat is None:
+            return test_pred
+        if isinstance(feat, str):
+            return test_pred[:, self.target_feat_names.index(feat)].reshape(self.test_target.shape[0],1)
+        if isinstance(feat, list):
+            return np.concatenate([test_pred[:, self.target_feat_names.index(name)].reshape(self.test_target.shape[0],1) for name in feat], axis=1)
 
     def _get_df_cols(self):
         """
@@ -89,3 +101,12 @@ class TrainingData(PickleInterface):
             return [f'GroundTruth_{i}' for i in range(num_target_feats)] + [f'Prediction_{i}' for i in range(num_target_feats)]
         else:
             return [f'GroundTruth_{feat}' for feat in self.target_feat_names] + [f'Prediction_{feat}' for feat in self.target_feat_names]
+
+    def get_feat_ind(self):
+        """
+        Helper function - get indices for feats
+        """
+        if self.target_feat_names is None:
+            return range(int(len(self._get_df_cols()) / 2))
+        else:
+            return self.target_feat_names

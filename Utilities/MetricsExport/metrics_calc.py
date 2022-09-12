@@ -26,12 +26,14 @@ class MetricsCalc:
 
     def calc_perf_metrics(self, result: TrainingData, n_predictors=0):
         list_metrs = []
-        for feat in result.target_feat_names:
-            metrs = self.perf_metr_dict(y_true=result.test_target_vals(feat),
-                                        y_pred=result.test_pred_vals(feat),
-                                        n_predictors=n_predictors,
-                                        perf_metr_names=self.metr_names['Metrics'])
-            list_metrs += [MetricsVal(metrics_type='Metrics', metrics_name=k, val=v, target_feat=feat) for k, v in metrs.items()]
+        target_vals = result.test_target_vals(result.target_feat_names)
+        pred_vals = result.test_pred_vals(result.target_feat_names)
+        for i,feat in enumerate(result.get_feat_ind()):
+                metrs = self.perf_metr_dict(y_true=target_vals[:,i],
+                                            y_pred=pred_vals[:,i],
+                                            n_predictors=n_predictors,
+                                            perf_metr_names=self.metr_names['Metrics'])
+                list_metrs += [MetricsVal(metrics_type='Metrics', metrics_name=k, val=v, target_feat=feat) for k, v in metrs.items()]
         return list_metrs
 
     def analyze_featsel(self, selectors):
@@ -54,8 +56,10 @@ class MetricsCalc:
         @param result: TrainingResult structure
         """
         list_metr_vals = []
-        for feat in result.target_feat_names:
-            residual = result.test_target_vals(feat) - result.test_pred_vals(feat)
+        target_vals = result.test_target_vals(result.target_feat_names)
+        pred_vals = result.test_pred_vals(result.target_feat_names)
+        for i, feat in enumerate(result.get_feat_ind()):
+            residual = target_vals[:,i] - pred_vals[:,i]
             residual = residual.to_numpy() if isinstance(residual, (pd.Series, pd.DataFrame)) else residual
             white_pvals = white_test(result.test_input, residual)
             for k, v in white_pvals.items():
@@ -82,9 +86,11 @@ class MetricsCalc:
         @param selected_metrics: Selected metrics for white test. Supported: 'pvalue_lm', 'pvalue_f'
         @param df_index: Optional: index for dataframe
         """
+        target_vals = result.test_target_vals(result.target_feat_names)
+        pred_vals = result.test_pred_vals(result.target_feat_names)
         df_white = pd.DataFrame()
-        for feat in result.target_feat_names:
-            white_pvals = white_test(result.test_input, result.test_target_vals(feat) - result.test_pred_vals(feat))
+        for i,feat in enumerate(result.get_feat_ind()):
+            white_pvals = white_test(result.test_input, target_vals[:,i] - pred_vals[:,i])
             df_white_feat = pd.DataFrame(data=white_pvals.values(), index=white_pvals.keys()).transpose()[self.metr_names['pvalues']].add_suffix(f'_{feat}')
             df_white = df_white_feat if df_white.empty else df_white.join(df_white_feat)
         if df_index is not None:
@@ -100,9 +106,11 @@ class MetricsCalc:
         @return pd.Dataframe containing metrics
         """
         metrs = {}
-        for feat in result.target_feat_names:
-            metrs.update(self.perf_metr_dict(y_true=result.test_target_vals(feat),
-                                             y_pred=result.test_pred_vals(feat),
+        target_vals = result.test_target_vals(result.target_feat_names)
+        pred_vals = result.test_pred_vals(result.target_feat_names)
+        for i, feat in enumerate(result.get_feat_ind()):
+            metrs.update(self.perf_metr_dict(y_true=target_vals[:,i],
+                                             y_pred=pred_vals[:,i],
                                              n_predictors=n_predictors,
                                              perf_metr_names=self.metr_names['Metrics'],
                                              key_suffix=f'_{feat}'))
