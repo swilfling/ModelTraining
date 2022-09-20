@@ -8,8 +8,8 @@ import os
 from pathlib import Path
 from parse_excel_files import parse_excel_files
 from ModelTraining.DatasetAnalysis.Datasets.DataProcessingInffeldgasse.EnergoPlus.VirtualMeasurements.VirtualMeasurementFunctions import *
-import Data.Plotting.plot_data as plt_utils
-import Data.Plotting.plot_distributions as plt_dist
+import ModelTraining.Data.Plotting.plot_data as plt_utils
+import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 
 
 if __name__ == "__main__":

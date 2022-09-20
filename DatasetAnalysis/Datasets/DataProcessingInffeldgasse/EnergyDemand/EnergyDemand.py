@@ -1,33 +1,33 @@
 #%%
 
-import ModelTraining.Preprocessing.DataImport.data_import as dp_utils
+from ModelTraining.Data.DataImport.dataimport import ExcelImport
 import os
 import numpy as np
-import Utilities.file_utilities as file_utils
-import Data.Plotting.plot_data as plt_utils
+import ModelTraining.Data.Plotting.plot_data as plt_utils
 import ModelTraining.DatasetAnalysis.Analysis.signal_processing_utils as sigutils
 import tikzplotlib
 
 #%%
 
 if __name__=='__main__':
-    hybridcosim_path = os.environ.get("HYBRIDCOSIM_REPO_PATH", "../../")
-    csv_file_path = os.path.join(hybridcosim_path, "Data/Inffeldgasse/Datasets_Occupancy_WeatherData/cps_data.xlsx")
+    root_dir = "../../../../"
+    csv_file_path = os.path.join(root_dir, "Data/Data/Inffeldgasse/Datasets_Occupancy_WeatherData/cps_data.xlsx")
 
-    csv_file_path = os.path.join(hybridcosim_path, "Data/Inffeldgasse/Datasets_Occupancy_WeatherData/sensor_A6.xlsx")
-    fig_save_path = os.path.join(hybridcosim_path, "DataAnalysis","DataProcessingInffeldgasse","EnergyDemand", "Figures")
+    csv_file_path = os.path.join(root_dir, "Data/Data/Inffeldgasse/Datasets_Occupancy_WeatherData/sensor_A6.xlsx")
+
+    fig_save_path = "./Figures"
 
     # Create output dir, read csv
-    file_utils.create_dir(fig_save_path)
-    #df_orig = dp_utils.parse_excel(csv_file_path)
-    df_orig = dp_utils.parse_excel_cps_data(csv_file_path)
-    df_orig = dp_utils.parse_excel_sensor_A6(csv_file_path)
+    os.makedirs(fig_save_path, exist_ok=True)
+
+    df_orig = ExcelImport(cols_to_rename={"consumption [kWh]":"energy", "time":"daytime"}).import_data(csv_file_path)
 
     print(df_orig.columns)
+    df_orig['holiday_weekend'] = np.logical_or(df_orig['holiday'], (df_orig['weekday'] == 5) + (df_orig['weekday'] == 6))
+
     df = df_orig[0:1000]
 
 #%%
-
     plt_utils.plt_subplots([df[['temperature']]], fig_save_path, "Temperature")
 
     plt_utils.plt_subplots([df[['energy']]], fig_save_path, "EnergyDemand")
@@ -106,7 +106,7 @@ if __name__=='__main__':
     columns = df_orig.columns[:7]
     sparsity = np.array([np.sum(df_orig[feature] != 0)  / df_orig.shape[0] for feature in columns])
 
-    plt_utils.barplot(columns, sparsity,fig_save_path='./Figures', fig_title='Density Analysis - Dataset CPS-Data', figsize=(8,4))
+    plt_utils.barplot(pd.Series(index=columns, data=sparsity),path='./Figures', fig_title='Density Analysis - Dataset CPS-Data', figsize=(8,4))
 
 
 #%%

@@ -2,9 +2,9 @@
 
 from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
-import ModelTraining.DatasetAnalysis.data_analysis as data_analysis
+import ModelTraining.DatasetAnalysis.Analysis.data_analysis as data_analysis
 import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
-import ModelTraining.Preprocessing.data_preprocessing as dp_utils
+import ModelTraining.DatasetAnalysis.Preprocessing.data_preprocessing as dp_utils
 import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 import os
 from ModelTraining.datamodels.datamodels.processing.datascaler import Normalizer

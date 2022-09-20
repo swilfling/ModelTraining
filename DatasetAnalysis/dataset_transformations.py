@@ -1,12 +1,12 @@
 #%%
 
-import ModelTraining.DatasetAnalysis.data_analysis as data_analysis
+import ModelTraining.DatasetAnalysis.Analysis.data_analysis as data_analysis
 from  ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.feature_engineering.featureengineering.transformers import SqrtTransform, Boxcox, Diff
 import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 import ModelTraining.Data.Plotting.plot_data as plt_utils
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
-from ModelTraining.Preprocessing import data_preprocessing as dp_utils
+from ModelTraining.DatasetAnalysis.Preprocessing import data_preprocessing as dp_utils
 import os
 from ModelTraining.datamodels.datamodels.processing.datascaler import Normalizer
 import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils

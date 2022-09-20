@@ -2,11 +2,11 @@
 
 from ModelTraining.Training.TrainingUtilities.training_utils import load_from_json
 from ModelTraining.Data.DataImport.featureset.featureset import FeatureSet
-import ModelTraining.DatasetAnalysis.data_analysis as data_analysis
+import ModelTraining.DatasetAnalysis.Analysis.data_analysis as data_analysis
 import ModelTraining.Training.TrainingUtilities.training_utils_expanded as train_utils
 from ModelTraining.Data.DataImport.dataimport import DataImport
 import ModelTraining.Data.Plotting.plot_distributions as plt_dist
-from ModelTraining.Preprocessing import data_preprocessing as dp_utils
+from ModelTraining.DatasetAnalysis.Preprocessing import data_preprocessing as dp_utils
 import os
 import numpy as np
 import pandas as pd

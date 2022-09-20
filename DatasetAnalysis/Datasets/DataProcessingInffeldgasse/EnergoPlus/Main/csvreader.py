@@ -6,8 +6,8 @@ Created on Fri Jul  2 17:10:02 2021
 """
 from pathlib import Path
 from ModelTraining.DatasetAnalysis.Datasets.DataProcessingInffeldgasse.EnergoPlus.VirtualMeasurements.VirtualMeasurementFunctions import *
-import Data.Plotting.plot_data as plt_utils
-import Data.Plotting.plot_distributions as plt_dist
+import ModelTraining.Data.Plotting.plot_data as plt_utils
+import ModelTraining.Data.Plotting.plot_distributions as plt_dist
 
 if __name__ == "__main__":
     root_dir = (Path(__file__).parent).parent.parent.parent.parent
