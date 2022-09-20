@@ -13,14 +13,18 @@ if __name__ == "__main__":
     colormap = plt.cm.get_cmap('tab10')
     plot_colors = [colormap(i) for i in range(6)]
 
-    experiment_name = 'Experiment_20220509_113409'
+    experiment_name = 'Experiment_20220919_114519'
     result_dir = os.path.join('../', 'results', experiment_name)
     usecase_names = ['CPS-Data', 'SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1', 'Solarhouse2']
+    #usecase_names = ['CPS-Data', 'SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1']
+    #usecase_names = ['Solarhouse2']
+
     target_vals = ['energy'] * 4 + ['TSolarVL', 'T_Solar_VL']
     units = ['kWh'] * 4 + ['°C'] * 2
     ylabels = ['Energy Consumption'] * 4 + ['Collector Supply Temperature'] * 1
 
-    thresholds_rfvals = [['MIC-value_0.05', 'R-value_0.05']]
+    thresh = "RDC"
+    thresholds_rfvals = [[f'{thresh}-value_0.05', 'R-value_0.05']]
     expansion = [['IdentityExpander', 'IdentityExpander'], ['IdentityExpander', 'PolynomialExpansion']]
 
     model_types = ['RidgeRegression']
@@ -34,14 +38,16 @@ if __name__ == "__main__":
     os.makedirs(timeseries_dir, exist_ok=True)
     os.makedirs(scatter_dir, exist_ok=True)
 
+    prefix = "RDCThreshold_"
+
 #%% Timeseries plots
     for usecase, target_val in zip(usecase_names, target_vals):
-        model_types = ['WeightedLS'] if usecase == "SensorC6" else ['LassoRegression'] if usecase == "SensorA6" else ['RidgeRegression']
+        model_types = ['LassoRegression'] if usecase in ["CPS-Data","SensorA6"] else ['RidgeRegression']
 
         for threshold_set in thresholds_rfvals:
             thresh_name_full = "_".join(name for name in threshold_set)
             path = os.path.join(result_dir, usecase, thresh_name_full)
-            df = get_result_df(path, model_types, baseline_model_type, target_val, expansion)
+            df = get_result_df(path, model_types, baseline_model_type, target_val, expansion, prefix=prefix)
             df.to_csv(os.path.join(timeseries_dir, f'{usecase}.csv'), index_label='t')
 
             plt.figure(figsize=(15,5))
@@ -57,13 +63,18 @@ if __name__ == "__main__":
             plt.savefig(f'{timeseries_dir}/{usecase}.png')
             plt.show()
 
-            y_true = df['Measurement value']
+            y_true = df['Measurement value'].to_numpy()
             for label, color in zip(df.columns[1:],plot_colors[1:]):
                 # Scatterplot
-                y_pred = df[label]
+                y_pred = df[label].to_numpy()
                 plt_utils.scatterplot(y_pred, y_true, scatter_dir,
                                    filename=f'Scatter_{usecase}_{thresh_name_full}_{label}'.replace(" ", ""),
-                                   fig_title=f'Correlation - Dataset {usecase}',
+                                   fig_title=f'Scatter - Dataset {usecase}',
+                                   figsize=(4, 4), color=color, label=label)
+
+                plt_utils.scatterplot(y_pred[:2000], y_true[:2000], scatter_dir,
+                                   filename=f'Scatter_{usecase}_{thresh_name_full}_{label}_short'.replace(" ", ""),
+                                   fig_title=f'Scatter - Dataset {usecase}',
                                    figsize=(4, 4), color=color, label=label)
 
 

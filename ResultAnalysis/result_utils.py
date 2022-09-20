@@ -18,13 +18,13 @@ def env_min(maxvals, windowsize):
     return maxvals_downsampled.reindex(maxvals.index).interpolate()
 
 
-def get_result_df(path, model_types, baseline_model_type, target_val, expansion):
+def get_result_df(path, model_types, baseline_model_type, target_val, expansion, prefix=""):
     dict_expansion_names = {'IdentityExpander': 'basic features', 'PolynomialExpansion': 'Polyfeatures'}
-    results_baseline = TrainingData.load_pkl(path, f'results_{baseline_model_type}_{target_val}_IdentityExpander.pkl')
+    results_baseline = TrainingData.load_pkl(path, f'results_{baseline_model_type}_{target_val}_{prefix}IdentityExpander.pkl')
     df = results_baseline.test_result_df(col_names=['Measurement value', baseline_model_type])
     for model_type in model_types:
         for expansion_set in expansion:
-            results_new = TrainingData.load_pkl(path, f'results_{model_type}_{target_val}_{expansion_set[-1]}.pkl')
+            results_new = TrainingData.load_pkl(path, f'results_{model_type}_{target_val}_{prefix}{expansion_set[-1]}.pkl')
             # TODO: support for multi-column
             df[f'{model_type} - {dict_expansion_names[expansion_set[-1]]}'] = results_new.test_pred_vals()
     return df

@@ -9,46 +9,29 @@ import ModelTraining.Data.Plotting.plot_data as plt_utils
 
 if __name__ == "__main__":
     # %%
-    usecase_names = ['CPS-Data','SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1', 'Solarhouse2']
+    usecase_names = ['CPS-Data','SensorA6', 'SensorB2', 'SensorC6', 'Solarhouse1']
     target_vals = ['energy'] * 4 + ['TSolarVL','T_Solar_VL']
     solarhouse_usecases = ['Solarhouse1','Solarhouse2']
-    metrics = ['R2_SKLEARN', 'CV-RMS', 'MAPE']
+    metrics = ['rsquared', 'cvrmse', 'mape']
 
-    thresholds_rfvals = [['MIC-value_0.05','R-value_0.05']]
+    thresh = "rdc"
+    thresholds_rfvals = [[f'{thresh}-value_0.05','R-value_0.05']]
     expansion = [['IdentityExpander','IdentityExpander'], ['IdentityExpander','PolynomialExpansion']]
 
     model_types = ['RidgeRegression']
-    timestamp = '20220509_113409'
+    timestamp = '20220919_114519'
     experiment_name = f'Experiment_{timestamp}'
     result_dir = os.path.join('../', 'results', experiment_name)
+    result_metrics_dir = os.path.join(result_dir, "Metrics")
     output_dir = f"./Figures/{experiment_name}"
 
-    #%% Linreg coeffs
-    coeff_dir = os.path.join(output_dir, 'ModelProperties')
-    os.makedirs(coeff_dir,exist_ok=True)
-    for usecase, target_val in zip(usecase_names, target_vals):
-        for threshold_set, expansion_set in zip(thresholds_rfvals, expansion):
-            thresh_name_full = "_".join(name for name in threshold_set)
-            path = os.path.join(result_dir, usecase, thresh_name_full, 'ModelProperties')
-            expansion_name = expansion_set[-1]
-            print(expansion_name)
-            for model_type in model_types:
-                df = pd.read_csv(os.path.join(path, f'Coefficients_{model_type}_{target_val}_{expansion_name}.csv'))
-                df = df.set_index(df.columns[0])
-                if usecase in solarhouse_usecases:
-                    figsize = (6,4) if expansion_name == 'IdentityExpander' else (10,10)
-                else:
-                    figsize = (8,6) if expansion_name == 'IdentityExpander' else (30,10)
-                filename = f'Coefficients_{model_type}_{target_val}_{usecase}_{thresh_name_full}_{expansion_name}'
-                fig_title = f"{model_type} Coefficients - {target_val} - Dataset {usecase}"
-                plt_utils.barplot(df, coeff_dir, filename=filename, fig_title=fig_title, figsize=figsize, ylabel='Coefficient')
-
+    prefix = "RDCThreshold_"
 
     #%% Metrics
     metrics_dir = os.path.join(output_dir, 'Metrics')
     os.makedirs(metrics_dir, exist_ok=True)
     for metric in metrics:
-        results_file = os.path.join(result_dir, f'Metrics_Experiment_{timestamp}_{metric}.csv')
+        results_file = os.path.join(result_metrics_dir, f'Metrics_Experiment_{timestamp}_{metric}.csv')
         df = pd.read_csv(results_file)
         df.set_index('Model')
 
@@ -71,7 +54,7 @@ if __name__ == "__main__":
 
 
 #%% Metrics - adjust file
-    results_file = os.path.join(result_dir, f'Metrics_full_Experiment_{timestamp}.csv')
+    results_file = os.path.join(result_metrics_dir, f'Metrics_full_Experiment_{timestamp}.csv')
     df = pd.read_csv(results_file)
     maxcol = df.max(axis=0).astype('string')
     mincol = df.min(axis=0).astype('string')
@@ -88,4 +71,25 @@ if __name__ == "__main__":
     print(df)
     df.to_csv(os.path.join(metrics_dir, f'Metrics_full_Experiment_{timestamp}_edited.csv'))
 
+
+
+    #%% Linreg coeffs
+    coeff_dir = os.path.join(output_dir, 'ModelProperties')
+    os.makedirs(coeff_dir,exist_ok=True)
+    for usecase, target_val in zip(usecase_names, target_vals):
+        for threshold_set, expansion_set in zip(thresholds_rfvals, expansion):
+            thresh_name_full = "_".join(name for name in threshold_set)
+            path = os.path.join(result_dir, usecase, thresh_name_full, 'ModelProperties')
+            expansion_name = expansion_set[-1]
+            print(expansion_name)
+            for model_type in model_types:
+                df = pd.read_csv(os.path.join(path, f'Coefficients_{model_type}_{target_val}_{prefix}{expansion_name}.csv'))
+                df = df.set_index(df.columns[0])
+                if usecase in solarhouse_usecases:
+                    figsize = (6,4) if expansion_name == 'IdentityExpander' else (10,10)
+                else:
+                    figsize = (8,6) if expansion_name == 'IdentityExpander' else (30,10)
+                filename = f'Coefficients_{model_type}_{target_val}_{usecase}_{thresh_name_full}_{expansion_name}'
+                fig_title = f"{model_type} Coefficients - {target_val} - Dataset {usecase}"
+                plt_utils.barplot(df, coeff_dir, filename=filename, fig_title=fig_title, figsize=figsize, ylabel='Coefficient')
 
