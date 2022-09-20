@@ -13,7 +13,7 @@ import argparse
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--usecase_names", type=str, default='CPS-Data,SensorA6,SensorB2,SensorC6,Solarhouse1,Solarhouse2')
-    parser.add_argument("--model_types", type=str, default='RidgeRegression,LassoRegression,WeightedLS,PLSRegression,RandomForestRegression')
+    parser.add_argument("--model_types", type=str, default='RidgeRegression,LassoRegression,PLSRegression,RandomForestRegression')
     args = parser.parse_args()
     model_types = model_names = args.model_types.split(",")
     list_usecases = args.usecase_names.split(",")
@@ -25,12 +25,13 @@ if __name__ == "__main__":
     parameters_full = {model_type: load_from_json(os.path.join(root_dir, 'Configuration/GridSearchParameters', f'parameters_{model_type}.json')) for model_type in model_types}
     expander_parameters = load_from_json(os.path.join(root_dir, 'Configuration','expander_params_PolynomialExpansion.json' ))
 
-    transf_cfg_files = [f"train_params_mic_0_05_{expansion_type}_r_0_05.json" for expansion_type in
+    selected_thresh = "rdc"
+    transf_cfg_files = [f"train_params_{selected_thresh}_0_05_{expansion_type}_r_0_05.json" for expansion_type in
                         ['basic', 'poly']]
     list_train_params = [
         TrainingParamsExpanded.load(os.path.join(root_dir, "Configuration", "TrainingParameters", file)) for file in
         transf_cfg_files]
-    params_names = ['MIC-value_0.05_R-value_0.05']
+    params_names = [f'{selected_thresh}-value_0.05_R-value_0.05']
 
     # Use cases
     config_path = os.path.join(root_dir, 'Configuration')
@@ -39,7 +40,7 @@ if __name__ == "__main__":
 
 
     # Results output
-    timestamp = "Experiment_20220809_154052"
+    timestamp = "Experiment_20220919_114519"
     results_path = os.path.join(root_dir, 'results', timestamp)
     os.makedirs(results_path, exist_ok=True)
     metrics_path = os.path.join(root_dir, 'results', timestamp, 'Metrics')
@@ -60,11 +61,11 @@ if __name__ == "__main__":
                     for feat in feature_set.get_output_feature_names():
                         # Load results
                         result = TrainingData.load_pkl(result_exp.results_root,
-                                                          f'results_{model_type}_{feat}_{training_params.str_expansion()}.pkl') # TODO fix this
+                                                          f'results_{model_type}_{feat}_{training_params.str_expansion(range=[2,-1])}.pkl') # TODO fix this
                         model_dir = os.path.join(result_exp.results_root,
-                                                 f'Models/{feat}/{model_type}_{training_params.str_expansion()}/{feat}')
+                                                 f'Models/{feat}/{model_type}_{training_params.str_expansion(range=[2,-1])}/{feat}')
                         model = ExpandedModel.load_pkl(model_dir, "expanded_model.pkl")
-                        result_exp.export_result_full(model, result, model.transformers.type_transf_full())
+                        result_exp.export_result_full(model, result, training_params.str_expansion(range=[2,-1]))
                         # Calculate metrics
                         selectors = model.transformers.get_transformers_of_type(FeatureSelector)
                         metr_vals = metr_exp.calc_all_metrics(result, selectors, model.get_num_predictors())

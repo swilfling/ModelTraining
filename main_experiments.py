@@ -17,7 +17,7 @@ import argparse
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--usecase_names", type=str, default='CPS-Data,SensorA6,SensorB2,SensorC6,Solarhouse1,Solarhouse2')
-    parser.add_argument("--model_types", type=str, default='RidgeRegression,LassoRegression,WeightedLS,PLSRegression,RandomForestRegression')
+    parser.add_argument("--model_types", type=str, default='RidgeRegression,LassoRegression,PLSRegression,RandomForestRegression')
     args = parser.parse_args()
     model_types = model_names = args.model_types.split(",")
     list_usecases = args.usecase_names.split(",")
@@ -30,11 +30,14 @@ if __name__ == '__main__':
     # Model parameters and expansion parameters
     params_dir =os.path.join(root_dir, 'Configuration/GridSearchParameters')
     parameters_full = {model_type: load_from_json(os.path.join(params_dir, f'parameters_{model_type}.json')) for model_type in model_types}
-    transf_cfg_files = [f"train_params_mic_0_05_{expansion_type}_r_0_05.json" for expansion_type in
+
+    selected_thresh = "rdc"
+    transf_cfg_files = [f"train_params_{selected_thresh}_0_05_{expansion_type}_r_0_05.json" for expansion_type in
                         ['basic', 'poly']]
+
     list_train_params = [TrainingParamsExpanded.load(os.path.join(root_dir, "Configuration","TrainingParameters", file)) for file in
                                transf_cfg_files]
-    params_names = ['MIC-value_0.05_R-value_0.05']
+    params_names = [f'{selected_thresh}-value_0.05_R-value_0.05']
     # Use cases
     dict_usecases = [load_from_json(os.path.join(config_path,"UseCaseConfig", f"{name}.json")) for name in
                      list_usecases]
@@ -75,7 +78,7 @@ if __name__ == '__main__':
                         model_dir = os.path.join(f"{training_params.model_name}",f"{training_params.model_type}_{training_params.str_expansion(range=[2,-1])}")
                         result_main_dir = os.path.join(results_path_thresh, "Models", model_dir)
                         train_utils.save_model_and_params(model, training_params, result_main_dir)
-                        result.save_pkl(results_path_thresh, f'results_{model_type}_{training_params.str_target_feats()}_{training_params.str_expansion()}.pkl')
+                        result.save_pkl(results_path_thresh, f'results_{model_type}_{training_params.str_target_feats()}_{training_params.str_expansion(range=[2,-1])}.pkl')
     print('Experiments finished')
 
 # %%
@@ -95,7 +98,7 @@ if __name__ == '__main__':
                         result = TrainingData.load_pkl(result_exp.results_root,
                                                           f'results_{model_type}_{feat}_{training_params.str_expansion(range=[2,-1])}.pkl') # TODO fix this
                         model_dir = os.path.join(result_exp.results_root,
-                                                 f'Models/{feat}/{model_type}_{training_params.str_expansion()}/{feat}')
+                                                 f'Models/{feat}/{model_type}_{training_params.str_expansion(range=[2,-1])}/{feat}')
                         model = ExpandedModel.load_pkl(model_dir, "expanded_model.pkl")
                         # Export model properties
                         result_exp.export_result_full(model, result, model.transformers.type_transf_full())
