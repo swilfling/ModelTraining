@@ -2,6 +2,7 @@ from ModelTraining.Data.DataImport.dataimport import DataImport
 import matplotlib.pyplot as plt
 from ModelTraining.Data.Plotting.plot_distributions import plot_missing_values
 import numpy as np
+import os
 
 
 if __name__ == '__main__':
@@ -9,8 +10,8 @@ if __name__ == '__main__':
     root_dir = "../"
     data_dir = "Beyond/LEEDR"
     filename = "processed-H01-Accounts-3-31-temperature"
-    data_import = DataImport.load(f"../../../Data/Configuration/DataImport/{data_dir}/{filename}.json")
-    data = data_import.import_data(f"../../../Data/Data/{data_dir}/LEEDR_data_minute_temperature/{filename}-CLEAN.txt")
+    data_import = DataImport.load(f"../../../../Data/Configuration/DataImport/{data_dir}/{filename}.json")
+    data = data_import.import_data(f"../../../../Data/Data/{data_dir}/LEEDR_data_minute_temperature/{filename}-CLEAN.txt")
 
     print(data.columns)
     plt.figure()
@@ -19,6 +20,7 @@ if __name__ == '__main__':
 
     # missing values
     data[data == -99] = np.nan
+    os.makedirs("./Figures", exist_ok=True)
     plot_missing_values(data, "./Figures", "missing_vals")
 
 
