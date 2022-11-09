@@ -1,13 +1,13 @@
 import pandas as pd
 import os
-import ModelTraining.Preprocessing.DataPreprocessing.data_preprocessing as dp_utils
-import Plotting.plot_distributions as plt_utils
+import ModelTraining.DatasetAnalysis.Preprocessing.data_preprocessing as dp_utils
+import ModelTraining.Data.Plotting.plot_distributions as plt_utils
 
 
 if __name__ == "__main__":
     filename = "P2017_20_Solarhouse_2"
     hybridcosim_path = os.environ.get("HYBRIDCOSIM_REPO_PATH", "../../")
-    path_to_dir = os.path.join(hybridcosim_path, "Data/AEE/")
+    path_to_dir = os.path.join("../../../../", "Data/Data/AEE/Solarhouse2")
     path_full = os.path.join(path_to_dir, filename)
     datahouse = pd.read_hdf(path_full + ".hd5")
     path_csv_output = os.path.join(path_to_dir, filename + ".csv")
